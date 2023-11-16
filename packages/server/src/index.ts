@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 
 import post from './routes/post'
+import auth from './routes/auth'
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -10,6 +11,7 @@ dotenv.config()
 
 app.use(express.json())
 app.use('/posts', post)
+app.use('/api/auth', auth)
 
 app.get('/', (req, res) => {
     res.send('Hello, world!')

@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import User from '../models/user'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import axios from 'axios'
 
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -44,5 +45,30 @@ export const loginUser = async (req: Request, res: Response) => {
         } else {
             res.status(500).json({ message: 'An unknown error occurred' })
         }
+    }
+}
+
+export const redirectToInstagram = (req: Request, res: Response) => {
+    const authUrl = `https://api.instagram.com/oauth/authorize?client_id=${process.env.INSTAGRAM_CLIENT_ID}&redirect_uri=${process.env.REDIRECT_URI}&scope=user_profile,user_media&response_type=code`
+    res.redirect(authUrl)
+}
+
+export const handleInstagramCallback = async (req: Request, res: Response) => {
+    const { code } = req.query
+    try {
+        const response = await axios.post('https://api.instagram.com/oauth/access_token', {
+            client_id: process.env.INSTAGRAM_CLIENT_ID,
+            client_secret: process.env.INSTAGRAM_CLIENT_SECRET,
+            grant_type: 'authorization_code',
+            redirect_uri: process.env.REDIRECT_URI,
+            code,
+        })
+
+        const accessToken = response.data.access_token
+        // Store access token in the database associated with the user
+        // Respond to the user as needed
+        res.json({ message: 'Instagram connected successfully', accessToken })
+    } catch (error) {
+        res.status(500).json({ message: 'Error during token exchange', error })
     }
 }
