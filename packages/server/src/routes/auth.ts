@@ -11,3 +11,6 @@ router.get('/authorize-instagram', redirectToInstagram)
 router.get('/auth/instagram/callback', handleInstagramCallback)
 
 export default router
+
+// https://developers.facebook.com/docs/instagram-api/getting-started
+// https://developers.facebook.com/docs/facebook-login
